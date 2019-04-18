@@ -11,9 +11,8 @@ namespace LibraryLekiWebApi.DbContexts
     {
         public DbSet<Book> Books { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlite("Data Source=books.db");
-        }
+        public BookContext(DbContextOptions<BookContext> options)
+            : base(options)
+        { }
     }
 }
