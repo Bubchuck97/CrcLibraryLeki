@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using LibraryLekiWebApi.Models;
+using LibraryLekiWebApi.Repository;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace LibraryLekiWebApi.Controllers
 {
@@ -7,36 +10,76 @@ namespace LibraryLekiWebApi.Controllers
     [ApiController]
     public class BookController : ControllerBase
     {
-        // GET: api/Book
+        private readonly IBookRepository<Book> _bookRepository;
+
+        public BookController(IBookRepository<Book> bookRepository)
+        {
+            _bookRepository = bookRepository;
+        }
+
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<IActionResult> GetAll()
         {
-            return new string[] { "value1", "value2" };
+            var books = await _bookRepository.GetAll();
+
+            return Ok(books);
         }
 
-        // GET: api/Book/5
         [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
+        public async Task<IActionResult> Get(uint id)
         {
-            return "value";
+            var book = await _bookRepository.Get(id);
+
+            if (book == null)
+            {
+                return NotFound("The book record not found. :(");
+            }
+
+            return Ok(book);
         }
 
-        // POST: api/Book
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<IActionResult> Post(Book book)
         {
+            if (book == null)
+            {
+                return BadRequest("The book is null!!!");
+            }
+
+            await _bookRepository.Add(book);
+
+            return CreatedAtAction(nameof(Get), new { id = book.Id }, book);
         }
 
-        // PUT: api/Book/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<IActionResult> Put(uint id, Book book)
         {
+            var bookToUpdate = await _bookRepository.Get(id);
+
+            if (bookToUpdate == null)
+            {
+                return NotFound("The book record to update couldnt be found.");
+            }
+
+            await _bookRepository.Update(bookToUpdate, book);
+
+            return NoContent();
         }
 
-        // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> Delete(uint id)
         {
+            var bookToDelete = await _bookRepository.Get(id);
+
+            if (bookToDelete == null)
+            {
+                return NotFound("The book to delete couldnt be found.");
+            }
+
+            await _bookRepository.Delete(bookToDelete);
+
+            return NoContent();
         }
+
     }
 }
