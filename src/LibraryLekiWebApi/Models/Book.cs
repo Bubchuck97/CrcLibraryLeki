@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LibraryLekiWebApi.Models
 {
-    public class BookMeasurement
+    public class Book
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
