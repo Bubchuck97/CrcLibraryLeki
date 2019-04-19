@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace LibraryLekiWebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/book")]
     [ApiController]
-    public class BookController : ControllerBase
+    public class BookController : Controller
     {
         private readonly IBookRepository<Book> _bookRepository;
 
