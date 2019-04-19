@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LibraryLekiWebApi.DbContexts;
+using LibraryLekiWebApi.Models;
+using LibraryLekiWebApi.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -12,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace LibraryLekiWebApi
 {
@@ -31,6 +34,17 @@ namespace LibraryLekiWebApi
 
             services.AddDbContext<BookContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("BookContext")));
+
+            services.AddScoped<IBookRepository<Book>, BookRepository>();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info
+                {
+                    Title = "LibraryLeki API",
+                    Version = "v1"
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,6 +62,12 @@ namespace LibraryLekiWebApi
 
             app.UseHttpsRedirection();
             app.UseMvc();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Library Leki Api v1_0!");
+            });
         }
     }
 }
